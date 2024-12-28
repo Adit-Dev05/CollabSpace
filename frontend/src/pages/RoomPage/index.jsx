@@ -1,12 +1,25 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "./index.css";
 import WhiteBoard from "../../components/Whiteboard";
 
 
 const RoomPage =()=>{
 
+    const canvasRef = useRef(null);
+    const ctxRef = useRef(null);
+
     const [tool,setTool] = useState("pencil");
-    const [color,setColor] = useState("color");
+    const [color,setColor] = useState("black");
+    const [elements,setElements] = useState([]);
+
+    const handleCLearCanvas =()=>{
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext("2d");
+        ctx.fillRect = "white";
+        ctx.clearRect(0,0,canvasRef.current.width, canvasRef.current.height);
+        setElements([]);
+    }
+
 
     return(
         <div className="row">
@@ -48,11 +61,18 @@ const RoomPage =()=>{
                 </div>
 
                 <div className="col-md-3">
-                    <button className="btn btn-danger">Clear WhiteBoard</button>
+                    <button className="btn btn-danger" onClick={handleCLearCanvas}>Clear WhiteBoard</button>
                 </div>
             </div>
             <div className="col-md-10 mx-auto mt-4 canvas-box">
-                <WhiteBoard />
+                <WhiteBoard 
+                canvasRef={canvasRef} 
+                ctxRef={ctxRef} 
+                elements={elements}
+                setElements={setElements}
+                color={color}
+                tool={tool}
+                />
             </div>
         </div>
     );
