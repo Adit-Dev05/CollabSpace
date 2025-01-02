@@ -1,34 +1,91 @@
 const express = require("express");
-const { connected } = require("process");
 const app = express();
+const cors = require("cors"); // Import CORS
 
 const server = require("http").createServer(app);
 const { Server } = require("socket.io");
 
+const { addUser, getUser, removeUser } = require("./utils/users");
+
+
+const corsOptions = {
+  origin: "http://localhost:3000", // Change this to your frontend's URL (or "*" for all origins)
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"],
+};
+app.use(cors(corsOptions)); // Enable CORS for the backend
+
+
+
 const io = new Server(server);
+// server.on("upgrade", (request, socket, head) => {});
 
-// Routes
+// routes
 app.get("/", (req, res) => {
-    res.send("This is a MERN realtime whiteboard collaboration webapp server");
+  res.send(
+    "This is mern realtime board sharing app official server by fullyworld web tutorials"
+  );
 });
 
-io.on("connection", (socket)=>{
-    console.log("User connected");
-});
+let roomIdGlobal, imgURLGlobal;
 
-const port = process.env.PORT || 3000;
+io.on("connection", (socket) => {
+  socket.on("userJoined", (data) => {
+    const { name, userId, roomId, host, presenter } = data;
+    roomIdGlobal = roomId;
+    socket.join(roomId);
+    const users = addUser({
+      name,
+      userId,
+      roomId,
+      host,
+      presenter,
+      socketId: socket.id,
+    });
+    socket.emit("userIsJoined", { success: true, users });
+    console.log({ name, userId });
+    socket.broadcast.to(roomId).emit("allUsers", users);
+    setTimeout(() => {
+      socket.broadcast
+        .to(roomId)
+        .emit("userJoinedMessageBroadcasted", { name, userId, users });
+      socket.broadcast.to(roomId).emit("whiteBoardDataResponse", {
+        imgURL: imgURLGlobal,
+      });
+    }, 1000);
+  });
 
-server.listen(port, (err) => {
-    if (err) {
-        console.error("Error starting server:", err);
-    } else {
-        console.log(`Server is running on http://localhost:${port}`);
+  socket.on("whiteboardData", (data) => {
+    imgURLGlobal = data;
+    socket.broadcast.to(roomIdGlobal).emit("whiteBoardDataResponse", {
+      imgURL: data,
+    });
+  });
+
+  socket.on("message", (data) => {
+    const { message } = data;
+    const user = getUser(socket.id);
+    if (user) {
+      socket.broadcast
+        .to(roomIdGlobal)
+        .emit("messageResponse", { message, name: user.name });
     }
+  });
+
+  socket.on("disconnect", () => {
+    const user = getUser(socket.id);
+    if (user) {
+      removeUser(socket.id);
+      socket.broadcast.to(roomIdGlobal).emit("userLeftMessageBroadcasted", {
+        name: user.name,
+        userId: user.userId,
+      });
+    }
+  });
 });
 
-server.on("error", (err) => {
-    if (err.code === "EADDRINUSE") {
-        console.error(`Port ${port} is already in use.`);
-        process.exit(1);
-    }
-});
+const port = process.env.PORT || 5001;
+
+server.listen(port, () =>
+  console.log("server is running on http://localhost:5001")
+);

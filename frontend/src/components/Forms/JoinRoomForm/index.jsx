@@ -1,25 +1,58 @@
-const JoinRoomForm = () => {
-    return (
-        <form className="form w-100 mt-4">
-            <div className="form-group mb-3">
-                <input 
-                    type="text" 
-                    className="form-control" 
-                    placeholder="Enter your name" 
-                />
-            </div>
-            <div className="form-group mb-3">
-                <input 
-                    type="text" 
-                    className="form-control" 
-                    placeholder="Enter room code" 
-                />
-            </div>
-            <button type="submit" className="btn btn-primary form-control mt-3">
-                Join Room
-            </button>
-        </form>
-    );
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+const JoinRoomForm = ({ uuid, socket, setUser }) => {
+  const [roomId, setRoomId] = useState("");
+  const [name, setName] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleRoomJoin = (e) => {
+    e.preventDefault();
+
+    // Join room logic without PeerJS for video calls
+    const roomData = {
+      name,
+      roomId,
+      userId: uuid(),
+      host: false,
+      presenter: false,
+    };
+
+    setUser(roomData);
+    navigate(`/${roomId}`);
+    socket.emit("userJoined", roomData);
+  };
+
+  return (
+    <form className="form col-md-12 mt-5">
+      <div className="form-group">
+        <input
+          type="text"
+          className="form-control my-2"
+          placeholder="Enter your name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </div>
+      <div className="form-group">
+        <input
+          type="text"
+          className="form-control my-2"
+          placeholder="Enter room code"
+          value={roomId}
+          onChange={(e) => setRoomId(e.target.value)}
+        />
+      </div>
+      <button
+        type="submit"
+        onClick={handleRoomJoin}
+        className="mt-4 btn-primary btn-block form-control"
+      >
+        Join Room
+      </button>
+    </form>
+  );
 };
 
 export default JoinRoomForm;
