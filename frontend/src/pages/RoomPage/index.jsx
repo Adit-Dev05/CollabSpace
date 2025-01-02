@@ -9,6 +9,7 @@ const RoomPage = ({
   socket,
   users,
   setUsers,
+  roomId
 }) => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
@@ -46,11 +47,39 @@ const RoomPage = ({
   };
 
   useEffect(() => {
+    // Listen for user join, users list update, and user left messages
     socket.on("userJoinedMessageBroadcasted", (data) => {
       setUsers(data.users);
       toast.info(`${data.name} joined the room`);
     });
-  }, []);
+
+    socket.on("allUsers", (data) => {
+      setUsers(data);
+    });
+
+    socket.on("userLeftMessageBroadcasted", (data) => {
+      toast.info(`${data.name} left the room`);
+    });
+
+    // Cleanup listeners on unmount
+    return () => {
+      socket.off("userJoinedMessageBroadcasted");
+      socket.off("allUsers");
+      socket.off("userLeftMessageBroadcasted");
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    // Emit the join room event
+    if (user) {
+      socket.emit("joinRoom", { roomId, user });
+
+      // Cleanup when user leaves the room or the component unmounts
+      return () => {
+        socket.emit("leaveRoom", { roomId, userId: user.userId });
+      };
+    }
+  }, [user, roomId, socket]);
 
   return (
     <div className="row">
@@ -84,6 +113,7 @@ const RoomPage = ({
       >
         Chats
       </button>
+
       {openedUserTab && (
         <div
           className="position-fixed top-0 h-100 text-white bg-dark"
@@ -105,13 +135,16 @@ const RoomPage = ({
           </div>
         </div>
       )}
+      
       {openedChatTab && (
         <Chat setOpenedChatTab={setOpenedChatTab} socket={socket} />
       )}
+
       <h1 className="text-center py-4">
         White Board Sharing App{" "}
         <span className="text-primary">[Users Online : {users.length}]</span>
       </h1>
+
       {user?.presenter && (
         <div className="col-md-10 mx-auto px-5 mb-3 d-flex align-items-center jusitfy-content-center">
           <div className="d-flex col-md-2 justify-content-center gap-1">
@@ -152,6 +185,7 @@ const RoomPage = ({
               />
             </div>
           </div>
+
           <div className="col-md-3 mx-auto ">
             <div className="d-flex align-items-center justify-content-center">
               <label htmlFor="color">Select Color: </label>
@@ -164,6 +198,7 @@ const RoomPage = ({
               />
             </div>
           </div>
+
           <div className="col-md-3 d-flex gap-2">
             <button
               className="btn btn-primary mt-1"
@@ -180,6 +215,7 @@ const RoomPage = ({
               Redo
             </button>
           </div>
+
           <div className="col-md-2">
             <button className="btn btn-danger" onClick={handleClearCanvas}>
               Clear Canvas

@@ -4,7 +4,6 @@ import { toast, ToastContainer } from "react-toastify";
 import io from "socket.io-client";
 
 import "./App.css";
-
 import Forms from "./components/Forms";
 import RoomPage from "./pages/RoomPage";
 
@@ -16,7 +15,7 @@ const connectionOptions = {
   transports: ["websocket"],
 };
 
-// Connect to socket.io
+// Initialize socket once
 const socket = io(server, connectionOptions);
 
 const App = () => {
@@ -26,7 +25,6 @@ const App = () => {
   useEffect(() => {
     socket.on("userIsJoined", (data) => {
       if (data.success) {
-        console.log("userJoined");
         setUsers(data.users);
       } else {
         console.log("userJoined error");
@@ -38,9 +36,15 @@ const App = () => {
     });
 
     socket.on("userLeftMessageBroadcasted", (data) => {
-      console.log(`${data.name} ${data.userId} left the room`);
       toast.info(`${data.name} left the room`);
     });
+
+    // Cleanup socket listeners
+    return () => {
+      socket.off("userIsJoined");
+      socket.off("allUsers");
+      socket.off("userLeftMessageBroadcasted");
+    };
   }, []);
 
   const uuid = () => {
@@ -85,6 +89,7 @@ const App = () => {
               user={user}
               users={users}
               setUsers={setUsers}
+              roomId={window.location.pathname.split("/")[1]}
             />
           }
         />

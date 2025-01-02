@@ -1,39 +1,21 @@
 const express = require("express");
 const app = express();
-const cors = require("cors"); // Import CORS
-
 const server = require("http").createServer(app);
 const { Server } = require("socket.io");
-
 const { addUser, getUser, removeUser } = require("./utils/users");
 
-
-const corsOptions = {
-  origin: "http://localhost:3000", // Change this to your frontend's URL (or "*" for all origins)
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type"],
-};
-app.use(cors(corsOptions)); // Enable CORS for the backend
-
-
-
 const io = new Server(server);
-// server.on("upgrade", (request, socket, head) => {});
-
-// routes
-app.get("/", (req, res) => {
-  res.send(
-    "This is mern realtime board sharing app official server by fullyworld web tutorials"
-  );
-});
 
 let roomIdGlobal, imgURLGlobal;
 
+// Handle connection
 io.on("connection", (socket) => {
+  // Handle user joining the room
   socket.on("userJoined", (data) => {
     const { name, userId, roomId, host, presenter } = data;
     roomIdGlobal = roomId;
     socket.join(roomId);
+
     const users = addUser({
       name,
       userId,
@@ -43,8 +25,10 @@ io.on("connection", (socket) => {
       socketId: socket.id,
     });
     socket.emit("userIsJoined", { success: true, users });
-    console.log({ name, userId });
+
     socket.broadcast.to(roomId).emit("allUsers", users);
+
+    // Emit message after a short delay
     setTimeout(() => {
       socket.broadcast
         .to(roomId)
@@ -55,6 +39,7 @@ io.on("connection", (socket) => {
     }, 1000);
   });
 
+  // Handle whiteboard data
   socket.on("whiteboardData", (data) => {
     imgURLGlobal = data;
     socket.broadcast.to(roomIdGlobal).emit("whiteBoardDataResponse", {
@@ -62,16 +47,17 @@ io.on("connection", (socket) => {
     });
   });
 
+  // Handle incoming chat message
   socket.on("message", (data) => {
     const { message } = data;
     const user = getUser(socket.id);
     if (user) {
-      socket.broadcast
-        .to(roomIdGlobal)
-        .emit("messageResponse", { message, name: user.name });
+      // Send message to everyone except the sender (avoid duplication)
+      socket.to(roomIdGlobal).emit("messageResponse", { message, name: user.name });
     }
   });
 
+  // Handle user disconnecting
   socket.on("disconnect", () => {
     const user = getUser(socket.id);
     if (user) {
@@ -85,7 +71,4 @@ io.on("connection", (socket) => {
 });
 
 const port = process.env.PORT || 5001;
-
-server.listen(port, () =>
-  console.log("server is running on http://localhost:5001")
-);
+server.listen(port, () => console.log("Server is running on http://localhost:5001"));
