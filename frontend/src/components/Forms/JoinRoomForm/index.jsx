@@ -10,7 +10,6 @@ const JoinRoomForm = ({ uuid, socket, setUser }) => {
   const handleRoomJoin = (e) => {
     e.preventDefault();
 
-    // Join room logic without PeerJS for video calls
     const roomData = {
       name,
       roomId,

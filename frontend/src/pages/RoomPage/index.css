@@ -1,3 +1,154 @@
-.canvas-box{
-    height:500px;
+/* General Body Styling */
+body {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f7fb; /* Light, soft background for a clean look */
+}
+
+/* Header Styling */
+header {
+  text-align: center;
+  margin: 30px 0;
+  color: #333;
+  font-size: 2.2rem;
+}
+
+header h1 {
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: #2c3e50; /* Darker shade for professionalism */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+header .users-count {
+  font-size: 1.2rem;
+  color: #2980b9; /* Soft blue for the user count */
+  font-weight: bold;
+}
+
+/* Toolbar Styling */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  padding: 18px 25px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); /* Softer, professional shadow */
+  border-radius: 8px;
+  margin: 20px auto;
+  max-width: 1100px;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.toolbar:hover {
+  transform: translateY(-3px); /* Subtle lift effect on hover */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.toolbar .form-group label {
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+.toolbar button {
+  margin: 0 8px;
+  padding: 12px 18px;
+  font-size: 14px;
+  border-radius: 5px;
+  background-color: #3498db; /* Refined blue for buttons */
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.toolbar button:hover {
+  background-color: #2980b9; /* Slightly darker blue on hover */
+  transform: translateY(-2px); /* Subtle lift effect */
+}
+
+/* Canvas Box Styling */
+.canvas-box {
+  width: 100%;
+  max-width: 1000px;
+  height: 600px;
+  margin: 20px auto;
+  border: 2px solid #e0e0e0; /* Subtle border */
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  background-color: #fff;
+  transition: transform 0.3s ease-in-out;
+}
+
+.canvas-box:hover {
+  transform: scale(1.03); /* Slight scaling effect on hover */
+}
+
+/* Sidebar Buttons */
+.sidebar-btns {
+  position: absolute;
+  top: 130px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-btns .btn {
+  width: 140px;
+  height: 45px;
+  font-weight: bold;
+  border-radius: 6px;
+  background-color: #3c403d; /* Professional green */
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.sidebar-btns .btn:hover {
+  transform: translateY(-3px); /* Hover lift effect */
+  background-color: #27ae60; /* Darker green on hover */
+}
+
+/* Sidebar Tab Styling (User & Chat Tabs) */
+.user-tab,
+.chat-tab {
+  background-color: #34495e; /* Darker, professional shade */
+  color: #ecf0f1; /* Light, readable text color */
+  padding: 25px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  width: 320px;
+  overflow-y: auto;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease-in-out;
+}
+
+.user-tab {
+  left: 0;
+}
+
+.chat-tab {
+  right: 0;
+}
+
+.close-btn {
+  background-color: #e74c3c; /* Red for close button */
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.close-btn:hover {
+  background-color: #c0392b; /* Darker red on hover */
+  transform: translateY(-2px); /* Subtle lift effect */
 }

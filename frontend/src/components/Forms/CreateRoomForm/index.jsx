@@ -10,7 +10,6 @@ const CreateRoomForm = ({ uuid, socket, setUser }) => {
   const handleCreateRoom = (e) => {
     e.preventDefault();
 
-    // Create room data without PeerJS for video calls
     const roomData = {
       name,
       roomId,
@@ -35,27 +34,24 @@ const CreateRoomForm = ({ uuid, socket, setUser }) => {
           onChange={(e) => setName(e.target.value)}
         />
       </div>
-      <div className="form-group border">
-        <div className="input-group d-flex align-items-center justify-content-center">
+      <div className="form-group">
+        <div className="input-group">
           <input
             type="text"
             value={roomId}
-            className="form-control my-2 border-0"
+            className="form-control my-2"
             disabled
-            placeholder="Generate room code"
+            placeholder="Generated room code"
           />
           <div className="input-group-append">
             <button
-              className="btn btn-primary btn-sm me-1"
+              className="btn btn-primary btn-sm"
               onClick={() => setRoomId(uuid())}
               type="button"
             >
               Generate
             </button>
-            <button
-              className="btn btn-outline-danger btn-sm me-2"
-              type="button"
-            >
+            <button className="btn btn-outline-danger btn-sm" type="button">
               Copy
             </button>
           </div>

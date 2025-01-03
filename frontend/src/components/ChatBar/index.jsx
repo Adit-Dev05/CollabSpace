@@ -30,31 +30,86 @@ const Chat = ({ setOpenedChatTab, socket }) => {
   };
 
   return (
-    <div className="position-fixed top-0 h-100 text-white bg-dark" style={{ width: "400px", left: "0%" }}>
+    <div
+      className="position-fixed top-0 right-0 h-100 bg-light shadow-lg"
+      style={{
+        width: "350px",
+        maxWidth: "100%",
+        borderRadius: "10px 0 0 10px",
+        overflow: "hidden",
+        maxHeight: "100vh", // Ensures the chat box does not exceed the viewport height
+      }}
+    >
       <button
         type="button"
         onClick={() => setOpenedChatTab(false)}
-        className="btn btn-light btn-block w-100 mt-5"
+        className="btn btn-secondary w-100 py-2"
+        style={{
+          fontSize: "16px",
+          textTransform: "uppercase",
+          fontWeight: "500",
+          borderRadius: "0",
+        }}
       >
         Close
       </button>
-      <div className="w-100 mt-5 p-2 border  border-1 border-white rounded-3" style={{ height: "70%" }}>
+      <div
+        className="w-100 p-3"
+        style={{
+          height: "calc(100vh - 160px)", // Subtract the height of the header and footer
+          overflowY: "auto",
+          backgroundColor: "#f9f9f9",
+          borderBottom: "1px solid #ddd",
+        }}
+      >
         {chat.map((msg, index) => (
-          <p key={index * 999} className="my-2 text-center w-100 py-2 border border-left-0 border-right-0">
-            {msg.name}: {msg.message}
+          <p
+            key={index * 999}
+            className="my-2 px-3 py-2 rounded-3"
+            style={{
+              backgroundColor: msg.name === "You" ? "#d1f7c4" : "#e1e1e1",
+              maxWidth: "80%",
+              marginLeft: msg.name === "You" ? "auto" : "0",
+              textAlign: msg.name === "You" ? "right" : "left",
+              wordWrap: "break-word",
+            }}
+          >
+            <strong>{msg.name}:</strong> {msg.message}
           </p>
         ))}
       </div>
-      <form onSubmit={handleSubmit} className="w-100 mt-4 d-flex rounded-3">
+      <form
+        onSubmit={handleSubmit}
+        className="d-flex p-3"
+        style={{
+          borderTop: "1px solid #ddd",
+          backgroundColor: "#fff",
+        }}
+      >
         <input
           type="text"
           placeholder="Enter message"
-          className="h-100 border-0 rounded-0 py-2 px-4"
-          style={{ width: "90%" }}
+          className="form-control rounded-0"
+          style={{
+            fontSize: "16px",
+            borderRadius: "20px",
+            padding: "10px 15px",
+            marginRight: "10px",
+            flexGrow: "1", // Ensures the input takes remaining space
+          }}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
-        <button type="submit" className="btn btn-primary rounded-0">
+        <button
+          type="submit"
+          className="btn btn-primary rounded-0"
+          style={{
+            fontSize: "16px",
+            padding: "10px 20px",
+            fontWeight: "600",
+            borderRadius: "20px",
+          }}
+        >
           Send
         </button>
       </form>
