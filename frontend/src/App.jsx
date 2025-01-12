@@ -7,7 +7,6 @@ import "./App.css";
 import Forms from "./components/Forms";
 import RoomPage from "./pages/RoomPage";
 
-const server = "http://localhost:5001"; // Backend server
 const connectionOptions = {
   "force new connection": true,
   reconnectionAttempts: "Infinity",
@@ -15,8 +14,8 @@ const connectionOptions = {
   transports: ["websocket"],
 };
 
-// Initialize socket once
-const socket = io(server, connectionOptions);
+// Use relative path to connect to the backend (works for same domain)
+const socket = io("/", connectionOptions);
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -27,7 +26,7 @@ const App = () => {
       if (data.success) {
         setUsers(data.users);
       } else {
-        console.log("userJoined error");
+        console.error("Error joining user");
       }
     });
 
@@ -39,7 +38,7 @@ const App = () => {
       toast.info(`${data.name} left the room`);
     });
 
-    // Cleanup socket listeners
+    // Cleanup socket listeners on unmount
     return () => {
       socket.off("userIsJoined");
       socket.off("allUsers");
@@ -48,23 +47,8 @@ const App = () => {
   }, []);
 
   const uuid = () => {
-    let S4 = () => {
-      return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-    };
-    return (
-      S4() +
-      S4() +
-      "-" +
-      S4() +
-      "-" +
-      S4() +
-      "-" +
-      S4() +
-      "-" +
-      S4() +
-      S4() +
-      S4()
-    );
+    let S4 = () => (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+    return `${S4()}${S4()}-${S4()}-${S4()}-${S4()}-${S4()}${S4()}${S4()}`;
   };
 
   return (
